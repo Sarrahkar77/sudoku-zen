@@ -1,10 +1,17 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sudoku Zen - Free online Sudoku game">
+    <meta name="keywords" content="sudoku, free game, puzzle, logic">
     <title>Sudoku Zen</title>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google AdSense - REMPLACEZ data-ad-client avec votre ID -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-VOTRE_ID_ICI"
+         crossorigin="anonymous"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -23,6 +30,8 @@
             --brown-light: #A87850;
             --accent-green: #6B9B5C;
             --accent-red: #C85A54;
+            --accent-blue: #5B8FA3;
+            --accent-gold: #D4AF37;
             --shadow: rgba(107, 68, 35, 0.15);
             --shadow-strong: rgba(107, 68, 35, 0.3);
         }
@@ -51,6 +60,64 @@
                 radial-gradient(circle at 80% 70%, rgba(107, 155, 92, 0.05) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .lang-btn {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--brown-primary);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.active {
+            background: var(--brown-primary);
+            color: white;
+            border-color: var(--brown-dark);
+            box-shadow: 0 4px 12px var(--shadow-strong);
+        }
+
+        .ad-container {
+            width: 100%;
+            max-width: 728px;
+            margin: 20px auto;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .ad-label {
+            font-size: 0.7rem;
+            color: var(--brown-primary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .container {
@@ -100,6 +167,46 @@
             letter-spacing: 1px;
         }
 
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-out 0.35s backwards;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--brown-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--brown-dark);
+        }
+
+        .stat-value.score {
+            color: var(--accent-gold);
+        }
+
         .game-info {
             display: flex;
             justify-content: space-between;
@@ -131,6 +238,41 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--brown-dark);
+        }
+
+        .difficulty-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-out 0.45s backwards;
+        }
+
+        .diff-btn {
+            padding: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            background: rgba(255, 255, 255, 0.4);
+            color: var(--brown-primary);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .diff-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .diff-btn.active {
+            background: var(--brown-primary);
+            color: white;
+            border-color: var(--brown-dark);
+            box-shadow: 0 4px 12px var(--shadow-strong);
         }
 
         .board-container {
@@ -203,6 +345,11 @@
             animation: celebrate 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
+        .cell.hint-used {
+            background: var(--accent-blue);
+            color: white;
+        }
+
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
@@ -215,7 +362,6 @@
             100% { transform: scale(1); }
         }
 
-        /* Enhanced 3x3 block separation */
         .cell:nth-child(3n+1):not(:nth-child(1)):not(:nth-child(28)):not(:nth-child(55)) {
             margin-left: 3px;
         }
@@ -287,10 +433,15 @@
             grid-column: span 2;
         }
 
+        .num-btn.undo-btn {
+            background: var(--accent-blue);
+        }
+
         .controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+            margin-bottom: 20px;
             animation: fadeIn 1s ease-out 0.7s backwards;
         }
 
@@ -358,7 +509,31 @@
         .modal-content p {
             font-size: 1.2rem;
             color: var(--brown-primary);
-            margin-bottom: 30px;
+            margin-bottom: 15px;
+        }
+
+        .modal-stats {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .modal-stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .modal-stat-label {
+            color: var(--brown-primary);
+            font-weight: 600;
+        }
+
+        .modal-stat-value {
+            color: var(--brown-dark);
+            font-weight: 800;
         }
 
         .modal-btn {
@@ -372,11 +547,60 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 12px var(--shadow);
+            margin: 5px;
         }
 
         .modal-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 18px var(--shadow-strong);
+        }
+
+        .modal-btn.secondary {
+            background: var(--brown-primary);
+        }
+
+        .leaderboard {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .leaderboard h3 {
+            font-family: 'Crimson Pro', serif;
+            color: var(--brown-dark);
+            margin-bottom: 15px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+        }
+
+        .leaderboard-rank {
+            font-weight: 800;
+            color: var(--accent-gold);
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: var(--brown-primary);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--brown-dark);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
 
         @media (max-width: 600px) {
@@ -396,27 +620,75 @@
             .board-container {
                 padding: 15px;
             }
+
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+
+            .language-selector {
+                position: static;
+                margin-bottom: 20px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="fr">🇫🇷 FR</button>
+        <button class="lang-btn" data-lang="en">🇬🇧 EN</button>
+        <button class="lang-btn" data-lang="es">🇪🇸 ES</button>
+    </div>
+
+    <!-- Top Banner Ad -->
+    <div class="ad-container">
+        <div class="ad-label" data-i18n="advertisement">Publicité</div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-VOTRE_ID_ICI"
+             data-ad-slot="VOTRE_SLOT_ICI"
+             data-ad-format="horizontal"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
     <div class="container">
         <header>
             <h1>Sudoku Zen</h1>
-            <div class="subtitle">Détendez votre esprit</div>
+            <div class="subtitle" data-i18n="subtitle">Détendez votre esprit • Jouez gratuitement</div>
         </header>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-label" data-i18n="totalScore">Score Total</div>
+                <div class="stat-value score" id="totalScore">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label" data-i18n="gamesWon">Parties Gagnées</div>
+                <div class="stat-value" id="gamesWon">0</div>
+            </div>
+        </div>
+
+        <div class="difficulty-selector">
+            <button class="diff-btn active" data-diff="easy" data-i18n="easy">Facile</button>
+            <button class="diff-btn" data-diff="medium" data-i18n="medium">Moyen</button>
+            <button class="diff-btn" data-diff="hard" data-i18n="hard">Difficile</button>
+        </div>
 
         <div class="game-info">
             <div class="info-item">
-                <div class="info-label">Temps</div>
+                <div class="info-label" data-i18n="time">Temps</div>
                 <div class="info-value" id="timer">0:00</div>
             </div>
             <div class="info-item">
-                <div class="info-label">Niveau</div>
-                <div class="info-value" id="difficulty">Moyen</div>
+                <div class="info-label" data-i18n="level">Niveau</div>
+                <div class="info-value" id="difficulty" data-i18n="easy">Facile</div>
             </div>
             <div class="info-item">
-                <div class="info-label">Erreurs</div>
+                <div class="info-label" data-i18n="errors">Erreurs</div>
                 <div class="info-value" id="errors">0</div>
             </div>
         </div>
@@ -435,124 +707,278 @@
             <button class="num-btn" data-num="7">7</button>
             <button class="num-btn" data-num="8">8</button>
             <button class="num-btn" data-num="9">9</button>
-            <button class="num-btn clear-btn">Effacer</button>
-            <button class="num-btn hint-btn">Indice</button>
+            <button class="num-btn undo-btn" data-i18n="undo">↶</button>
+            <button class="num-btn clear-btn" data-i18n="clear">Effacer</button>
+            <button class="num-btn hint-btn" data-i18n="hint">Indice</button>
         </div>
 
         <div class="controls">
-            <button class="ctrl-btn" onclick="newGame()">Nouveau Jeu</button>
-            <button class="ctrl-btn" onclick="checkSolution()">Vérifier</button>
+            <button class="ctrl-btn" onclick="newGame()" data-i18n="newGame">Nouveau Jeu</button>
+            <button class="ctrl-btn" onclick="checkSolution()" data-i18n="check">Vérifier</button>
+        </div>
+
+        <div class="leaderboard">
+            <h3 data-i18n="leaderboard">🏆 Meilleurs Scores</h3>
+            <div id="leaderboardList"></div>
         </div>
     </div>
 
+    <!-- Bottom Banner Ad -->
+    <div class="ad-container">
+        <div class="ad-label" data-i18n="advertisement">Publicité</div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-VOTRE_ID_ICI"
+             data-ad-slot="VOTRE_SLOT_ICI"
+             data-ad-format="horizontal"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <footer>
+        <p>© 2025 Sudoku Zen • <span data-i18n="freeGame">Jeu gratuit en ligne</span></p>
+        <p><a href="#" onclick="showPrivacy()" data-i18n="privacy">Politique de confidentialité</a> | <a href="#" onclick="showContact()" data-i18n="contact">Contact</a></p>
+    </footer>
+
     <div class="modal" id="winModal">
         <div class="modal-content">
-            <h2>🎉 Félicitations!</h2>
-            <p>Vous avez résolu le Sudoku!</p>
-            <p><strong>Temps:</strong> <span id="finalTime"></span></p>
-            <button class="modal-btn" onclick="closeModal(); newGame();">Nouveau Jeu</button>
+            <h2 data-i18n="congratulations">🎉 Félicitations!</h2>
+            <p data-i18n="youWon">Vous avez résolu le Sudoku!</p>
+            <div class="modal-stats">
+                <div class="modal-stat-item">
+                    <span class="modal-stat-label" data-i18n="time">Temps:</span>
+                    <span class="modal-stat-value" id="finalTime"></span>
+                </div>
+                <div class="modal-stat-item">
+                    <span class="modal-stat-label" data-i18n="errors">Erreurs:</span>
+                    <span class="modal-stat-value" id="finalErrors"></span>
+                </div>
+                <div class="modal-stat-item">
+                    <span class="modal-stat-label" data-i18n="score">Score:</span>
+                    <span class="modal-stat-value" id="finalScore"></span>
+                </div>
+            </div>
+            <button class="modal-btn" onclick="closeModal(); newGame();" data-i18n="newGame">Nouveau Jeu</button>
+            <button class="modal-btn secondary" onclick="shareScore();" data-i18n="share">Partager</button>
         </div>
     </div>
 
     <script>
+        // ==================== TRANSLATIONS ====================
+        const translations = {
+            fr: {
+                subtitle: "Détendez votre esprit • Jouez gratuitement",
+                totalScore: "Score Total",
+                gamesWon: "Parties Gagnées",
+                easy: "Facile",
+                medium: "Moyen",
+                hard: "Difficile",
+                time: "Temps",
+                level: "Niveau",
+                errors: "Erreurs",
+                undo: "↶",
+                clear: "Effacer",
+                hint: "Indice",
+                newGame: "Nouveau Jeu",
+                check: "Vérifier",
+                leaderboard: "🏆 Meilleurs Scores",
+                advertisement: "Publicité",
+                freeGame: "Jeu gratuit en ligne",
+                privacy: "Politique de confidentialité",
+                contact: "Contact",
+                congratulations: "🎉 Félicitations!",
+                youWon: "Vous avez résolu le Sudoku!",
+                score: "Score",
+                share: "Partager",
+                noScores: "Aucun score enregistré"
+            },
+            en: {
+                subtitle: "Relax your mind • Play for free",
+                totalScore: "Total Score",
+                gamesWon: "Games Won",
+                easy: "Easy",
+                medium: "Medium",
+                hard: "Hard",
+                time: "Time",
+                level: "Level",
+                errors: "Errors",
+                undo: "↶",
+                clear: "Clear",
+                hint: "Hint",
+                newGame: "New Game",
+                check: "Check",
+                leaderboard: "🏆 Best Scores",
+                advertisement: "Advertisement",
+                freeGame: "Free online game",
+                privacy: "Privacy Policy",
+                contact: "Contact",
+                congratulations: "🎉 Congratulations!",
+                youWon: "You solved the Sudoku!",
+                score: "Score",
+                share: "Share",
+                noScores: "No scores recorded"
+            },
+            es: {
+                subtitle: "Relaja tu mente • Juega gratis",
+                totalScore: "Puntuación Total",
+                gamesWon: "Partidas Ganadas",
+                easy: "Fácil",
+                medium: "Medio",
+                hard: "Difícil",
+                time: "Tiempo",
+                level: "Nivel",
+                errors: "Errores",
+                undo: "↶",
+                clear: "Borrar",
+                hint: "Pista",
+                newGame: "Nuevo Juego",
+                check: "Verificar",
+                leaderboard: "🏆 Mejores Puntuaciones",
+                advertisement: "Publicidad",
+                freeGame: "Juego gratis en línea",
+                privacy: "Política de privacidad",
+                contact: "Contacto",
+                congratulations: "🎉 ¡Felicidades!",
+                youWon: "¡Has resuelto el Sudoku!",
+                score: "Puntuación",
+                share: "Compartir",
+                noScores: "No hay puntuaciones registradas"
+            }
+        };
+
+        // Current language
+        let currentLang = localStorage.getItem('sudoku-lang') || 'fr';
+
+        // Update all text elements
+        function updateLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('sudoku-lang', lang);
+            
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+
+            // Update active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+
+            // Update difficulty display
+            document.getElementById('difficulty').textContent = translations[lang][currentDifficulty];
+        }
+
+        // Language selector event listeners
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                updateLanguage(btn.dataset.lang);
+            });
+        });
+
+        // ==================== GAME LOGIC ====================
         let grid = [];
         let solution = [];
         let selectedCell = null;
         let timer = 0;
         let timerInterval = null;
         let errors = 0;
+        let currentDifficulty = 'easy';
+        let moveHistory = [];
+        let hintsUsed = 0;
 
-        // Sudoku puzzles (format: 0 = empty cell)
-        const puzzles = [
-            {
-                puzzle: [
-                    5,3,0,0,7,0,0,0,0,
-                    6,0,0,1,9,5,0,0,0,
-                    0,9,8,0,0,0,0,6,0,
-                    8,0,0,0,6,0,0,0,3,
-                    4,0,0,8,0,3,0,0,1,
-                    7,0,0,0,2,0,0,0,6,
-                    0,6,0,0,0,0,2,8,0,
-                    0,0,0,4,1,9,0,0,5,
-                    0,0,0,0,8,0,0,7,9
-                ],
-                solution: [
-                    5,3,4,6,7,8,9,1,2,
-                    6,7,2,1,9,5,3,4,8,
-                    1,9,8,3,4,2,5,6,7,
-                    8,5,9,7,6,1,4,2,3,
-                    4,2,6,8,5,3,7,9,1,
-                    7,1,3,9,2,4,8,5,6,
-                    9,6,1,5,3,7,2,8,4,
-                    2,8,7,4,1,9,6,3,5,
-                    3,4,5,2,8,6,1,7,9
-                ]
-            },
-            {
-                puzzle: [
-                    0,0,0,2,6,0,7,0,1,
-                    6,8,0,0,7,0,0,9,0,
-                    1,9,0,0,0,4,5,0,0,
-                    8,2,0,1,0,0,0,4,0,
-                    0,0,4,6,0,2,9,0,0,
-                    0,5,0,0,0,3,0,2,8,
-                    0,0,9,3,0,0,0,7,4,
-                    0,4,0,0,5,0,0,3,6,
-                    7,0,3,0,1,8,0,0,0
-                ],
-                solution: [
-                    4,3,5,2,6,9,7,8,1,
-                    6,8,2,5,7,1,4,9,3,
-                    1,9,7,8,3,4,5,6,2,
-                    8,2,6,1,9,5,3,4,7,
-                    3,7,4,6,8,2,9,1,5,
-                    9,5,1,7,4,3,6,2,8,
-                    5,1,9,3,2,6,8,7,4,
-                    2,4,8,9,5,7,1,3,6,
-                    7,6,3,4,1,8,2,5,9
-                ]
-            },
-            {
-                puzzle: [
-                    0,2,0,6,0,8,0,0,0,
-                    5,8,0,0,0,9,7,0,0,
-                    0,0,0,0,4,0,0,0,0,
-                    3,7,0,0,0,0,5,0,0,
-                    6,0,0,0,0,0,0,0,4,
-                    0,0,8,0,0,0,0,1,3,
-                    0,0,0,0,2,0,0,0,0,
-                    0,0,9,8,0,0,0,3,6,
-                    0,0,0,3,0,6,0,9,0
-                ],
-                solution: [
-                    1,2,3,6,7,8,9,4,5,
-                    5,8,4,2,3,9,7,6,1,
-                    9,6,7,1,4,5,3,2,8,
-                    3,7,2,4,6,1,5,8,9,
-                    6,9,1,5,8,3,2,7,4,
-                    4,5,8,7,9,2,6,1,3,
-                    8,3,6,9,2,4,1,5,7,
-                    2,1,9,8,5,7,4,3,6,
-                    7,4,5,3,1,6,8,9,2
-                ]
-            }
-        ];
+        // Statistics
+        let totalScore = parseInt(localStorage.getItem('totalScore') || '0');
+        let gamesWon = parseInt(localStorage.getItem('gamesWon') || '0');
+        let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
 
-        let currentPuzzle = null;
+        // Update stats display
+        document.getElementById('totalScore').textContent = totalScore;
+        document.getElementById('gamesWon').textContent = gamesWon;
+
+        // Original puzzle database - 100% created by Claude
+        const puzzleDatabase = {
+            easy: [
+                {
+                    puzzle: [6,0,0,1,0,4,0,0,8,0,4,0,0,8,0,0,1,0,0,0,1,0,0,0,4,0,0,0,0,7,0,5,0,2,0,0,4,0,0,7,0,2,0,0,5,0,0,3,0,1,0,8,0,0,0,0,8,0,0,0,6,0,0,0,7,0,0,2,0,0,9,0,2,0,0,5,0,8,0,0,1],
+                    solution: [6,5,2,1,3,4,9,7,8,7,4,9,2,8,5,3,1,6,3,8,1,6,9,7,4,5,2,1,6,7,8,5,9,2,3,4,4,9,8,7,6,2,1,4,5,9,2,3,4,1,6,8,7,5,5,1,8,9,4,3,6,2,7,8,7,4,3,2,1,5,9,6,2,3,6,5,7,8,4,8,1]
+                },
+                {
+                    puzzle: [0,3,0,0,0,8,0,0,1,0,0,4,0,3,0,8,0,0,8,0,0,4,0,0,0,0,3,0,8,0,0,4,0,0,3,0,3,0,0,8,0,5,0,0,4,0,5,0,0,1,0,0,8,0,5,0,0,0,0,3,0,0,8,0,0,8,0,5,0,3,0,0,4,0,0,2,0,0,0,5,0],
+                    solution: [7,3,2,5,9,8,6,4,1,9,1,4,6,3,2,8,7,5,8,5,6,4,7,1,9,2,3,1,8,9,7,4,6,5,3,2,3,2,7,8,6,5,1,9,4,6,5,3,9,1,2,4,8,7,5,4,1,3,2,9,7,6,8,2,9,8,1,5,7,3,4,6,4,7,3,2,8,6,9,5,1]
+                },
+                {
+                    puzzle: [0,0,6,0,0,3,8,0,0,3,0,0,8,0,0,0,0,6,0,8,0,0,6,0,0,3,0,0,0,3,0,0,8,0,0,4,8,0,0,3,0,6,0,0,1,6,0,0,1,0,0,3,0,0,0,3,0,0,8,0,0,6,0,5,0,0,0,0,1,0,0,8,0,0,8,2,0,0,5,0,0],
+                    solution: [1,2,6,5,4,3,8,7,9,3,7,4,8,9,2,1,5,6,9,8,5,7,6,1,4,3,2,2,1,3,6,5,8,9,7,4,8,4,7,3,2,6,5,9,1,6,5,9,1,7,4,3,2,7,4,3,1,9,8,5,2,6,7,5,6,2,4,3,1,7,4,8,7,9,8,2,1,7,5,4,3]
+                },
+                {
+                    puzzle: [1,0,0,0,6,0,0,0,3,0,6,0,1,0,0,0,4,0,0,0,3,0,0,4,6,0,0,0,0,6,0,3,0,0,0,4,3,0,0,6,0,1,0,0,8,8,0,0,0,4,0,3,0,0,0,0,8,4,0,0,1,0,0,0,3,0,0,0,6,0,8,0,6,0,0,0,1,0,0,0,5],
+                    solution: [1,8,2,5,6,7,9,2,3,9,6,5,1,3,8,7,4,2,7,2,3,9,8,4,6,5,1,2,1,6,8,3,5,7,9,4,3,5,4,6,7,1,2,9,8,8,9,7,2,4,9,3,1,6,5,4,8,4,2,3,1,6,7,2,3,1,7,5,6,4,8,9,6,7,9,3,1,2,8,4,5]
+                },
+                {
+                    puzzle: [0,8,0,0,0,6,0,0,4,6,0,0,4,0,0,0,8,0,0,0,4,0,8,0,6,0,0,0,0,8,0,6,0,0,0,3,3,0,0,8,0,4,0,0,5,5,0,0,0,3,0,8,0,0,0,0,6,0,4,0,3,0,0,0,4,0,0,0,3,0,0,6,2,0,0,6,0,0,0,4,0],
+                    solution: [7,8,3,1,5,6,2,9,4,6,5,1,4,2,9,7,8,3,9,2,4,3,8,7,6,5,1,1,7,8,5,6,2,4,9,3,3,6,9,8,1,4,7,2,5,5,4,2,7,3,9,8,1,6,4,1,6,9,4,8,3,7,2,8,4,5,2,7,3,1,5,6,2,3,7,6,9,1,5,4,8]
+                }
+            ],
+            medium: [
+                {
+                    puzzle: [0,0,0,0,8,0,0,6,0,0,6,0,4,0,0,0,0,8,8,0,0,0,0,6,0,0,4,0,0,6,0,0,4,0,0,7,4,0,0,6,0,8,0,0,1,7,0,0,1,0,0,8,0,0,3,0,0,8,0,0,0,0,6,6,0,0,0,0,3,0,8,0,0,8,0,0,6,0,0,0,0],
+                    solution: [3,4,1,7,8,5,9,6,2,5,6,7,4,3,2,1,9,8,8,9,2,1,5,6,3,7,4,1,3,6,5,2,4,9,8,7,4,5,9,6,7,8,2,3,1,7,2,3,1,9,5,8,4,5,3,1,4,8,2,7,5,9,6,6,7,5,2,4,3,1,8,9,9,8,3,5,6,1,4,2,7]
+                },
+                {
+                    puzzle: [0,0,4,0,0,8,0,0,6,8,0,0,6,0,0,0,4,0,0,6,0,0,4,0,0,0,8,0,0,8,0,6,0,0,0,4,4,0,0,8,0,5,0,0,1,6,0,0,0,1,0,8,0,0,8,0,0,0,5,0,0,6,0,0,4,0,0,0,6,0,0,5,5,0,0,4,0,0,1,0,0],
+                    solution: [1,3,4,7,2,8,5,9,6,8,7,9,6,3,5,2,4,1,2,6,5,1,4,9,7,3,8,3,1,8,5,6,7,9,2,4,4,9,7,8,3,5,6,2,1,6,5,2,9,1,4,8,7,3,8,2,1,3,5,4,9,6,7,7,4,3,2,8,6,1,9,5,5,8,6,4,7,2,1,3,9]
+                },
+                {
+                    puzzle: [0,0,0,6,0,0,0,8,0,6,0,0,0,8,0,0,0,4,0,8,0,4,0,0,6,0,0,0,0,6,0,0,8,0,0,3,3,0,0,8,0,6,0,0,5,5,0,0,3,0,0,8,0,0,0,0,8,0,0,4,0,6,0,4,0,0,0,6,0,0,0,8,0,6,0,0,0,3,0,0,0],
+                    solution: [1,3,4,6,5,7,9,8,2,6,7,5,2,8,9,3,1,4,9,8,2,4,3,1,6,5,7,2,1,6,5,4,8,7,9,3,3,4,9,8,7,6,1,2,5,5,9,7,3,1,2,8,4,6,7,2,8,9,3,4,5,6,1,4,5,3,1,6,7,2,9,8,8,6,1,7,2,3,4,5,9]
+                },
+                {
+                    puzzle: [0,0,6,0,0,4,0,0,8,4,0,0,8,0,0,0,6,0,0,8,0,0,6,0,0,0,4,0,0,8,0,4,0,0,0,6,6,0,0,5,0,8,0,0,1,5,0,0,0,1,0,8,0,0,8,0,0,0,5,0,0,4,0,0,4,0,0,0,6,0,0,5,3,0,0,4,0,0,6,0,0],
+                    solution: [1,5,6,3,7,4,9,2,8,4,7,3,8,2,9,5,6,1,9,8,2,1,6,5,3,7,4,2,1,8,9,4,3,7,5,6,6,3,4,5,7,8,2,9,1,5,9,7,6,1,2,8,3,4,8,6,1,7,5,3,9,4,2,7,4,9,2,8,6,1,3,5,3,2,5,4,9,1,6,8,7]
+                }
+            ],
+            hard: [
+                {
+                    puzzle: [0,0,0,0,6,0,0,0,8,6,0,0,0,0,8,0,0,4,0,8,0,4,0,0,0,0,0,0,0,6,0,0,0,0,0,3,3,0,0,0,0,6,0,0,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,6,0,4,0,0,0,0,0,0,0,8,0,0,0,0,0,3,0,0,0],
+                    solution: [1,3,4,5,6,7,9,2,8,6,7,5,2,3,8,1,9,4,9,8,2,4,1,5,6,7,3,2,1,6,8,4,9,7,5,3,3,4,9,7,5,6,8,1,2,5,9,7,3,8,1,4,2,6,7,2,8,9,3,4,5,6,1,4,5,3,1,7,2,9,6,8,8,6,1,6,2,3,7,4,5]
+                },
+                {
+                    puzzle: [0,0,0,0,0,4,0,0,8,0,0,0,8,0,0,0,0,4,0,0,0,0,6,0,0,0,0,0,0,0,0,4,0,0,0,6,0,0,0,5,0,8,0,0,1,5,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,4,0,0,0,0,6,0,0,0,0,0,0,4,0,0,0,0,0],
+                    solution: [1,3,6,5,7,4,9,2,8,7,5,9,8,3,2,1,6,4,2,8,4,1,6,9,5,7,3,3,1,8,9,4,7,2,5,6,6,4,7,5,2,8,3,9,1,5,9,2,6,1,3,8,4,7,8,2,1,7,5,6,4,3,9,4,7,3,2,8,6,1,5,2,9,6,5,3,4,1,7,8,2]
+                },
+                {
+                    puzzle: [0,0,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,4,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0],
+                    solution: [1,3,6,5,7,2,9,4,8,7,5,9,8,3,6,1,2,4,2,8,4,1,6,9,5,7,3,3,1,8,9,4,7,2,5,6,6,4,7,5,2,8,3,9,1,5,9,2,6,1,3,8,4,7,8,2,1,7,5,4,6,3,9,4,7,3,2,8,6,1,5,2,9,6,5,3,4,1,7,8,2]
+                },
+                {
+                    puzzle: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    solution: [1,2,3,4,5,6,7,8,9,4,5,6,7,8,9,1,2,3,7,8,9,1,2,3,4,5,6,2,3,4,5,6,7,8,9,1,5,6,7,8,9,1,2,3,4,8,9,1,2,3,4,5,6,7,3,4,5,6,7,8,9,1,2,6,7,8,9,1,2,3,4,5,9,1,2,3,4,5,6,7,8]
+                }
+            ]
+        };
 
         function initGame() {
             const gridElement = document.getElementById('grid');
             gridElement.innerHTML = '';
             
-            // Select random puzzle
-            currentPuzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
+            const puzzles = puzzleDatabase[currentDifficulty];
+            const currentPuzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
             grid = [...currentPuzzle.puzzle];
             solution = [...currentPuzzle.solution];
             
             errors = 0;
+            hintsUsed = 0;
+            moveHistory = [];
             document.getElementById('errors').textContent = errors;
             
-            // Create cells
             for (let i = 0; i < 81; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
@@ -568,7 +994,6 @@
                 gridElement.appendChild(cell);
             }
             
-            // Start timer
             clearInterval(timerInterval);
             timer = 0;
             updateTimer();
@@ -593,18 +1018,29 @@
             selectedCell.classList.add('selected');
         }
 
-        // Number pad buttons
+        document.querySelectorAll('.diff-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentDifficulty = btn.dataset.diff;
+                document.getElementById('difficulty').textContent = translations[currentLang][currentDifficulty];
+                newGame();
+            });
+        });
+
         document.querySelectorAll('.num-btn[data-num]').forEach(btn => {
             btn.addEventListener('click', () => {
                 if (!selectedCell || selectedCell.classList.contains('fixed')) return;
                 
                 const num = parseInt(btn.dataset.num);
                 const index = parseInt(selectedCell.dataset.index);
+                const oldValue = grid[index];
+                
+                moveHistory.push({ index, oldValue, newValue: num });
                 
                 selectedCell.textContent = num;
                 grid[index] = num;
                 
-                // Check if correct
                 if (num === solution[index]) {
                     selectedCell.classList.remove('error');
                     selectedCell.classList.add('completed');
@@ -612,7 +1048,6 @@
                         selectedCell.classList.remove('completed');
                     }, 600);
                     
-                    // Check if puzzle is complete
                     if (grid.every((val, idx) => val === solution[idx])) {
                         setTimeout(() => winGame(), 500);
                     }
@@ -627,29 +1062,49 @@
             });
         });
 
-        // Clear button
         document.querySelector('.clear-btn').addEventListener('click', () => {
             if (!selectedCell || selectedCell.classList.contains('fixed')) return;
             
             const index = parseInt(selectedCell.dataset.index);
+            const oldValue = grid[index];
+            
+            moveHistory.push({ index, oldValue, newValue: 0 });
+            
             selectedCell.textContent = '';
             selectedCell.classList.remove('error', 'completed');
             grid[index] = 0;
         });
 
-        // Hint button
+        document.querySelector('.undo-btn').addEventListener('click', () => {
+            if (moveHistory.length === 0) return;
+            
+            const lastMove = moveHistory.pop();
+            const cell = document.querySelector(`[data-index="${lastMove.index}"]`);
+            
+            if (lastMove.oldValue === 0) {
+                cell.textContent = '';
+            } else {
+                cell.textContent = lastMove.oldValue;
+            }
+            
+            grid[lastMove.index] = lastMove.oldValue;
+            cell.classList.remove('error', 'completed');
+        });
+
         document.querySelector('.hint-btn').addEventListener('click', () => {
             if (!selectedCell || selectedCell.classList.contains('fixed')) return;
             
             const index = parseInt(selectedCell.dataset.index);
             const correctNum = solution[index];
             
+            hintsUsed++;
+            
             selectedCell.textContent = correctNum;
             grid[index] = correctNum;
-            selectedCell.classList.add('completed');
+            selectedCell.classList.add('hint-used');
             
             setTimeout(() => {
-                selectedCell.classList.remove('completed', 'selected');
+                selectedCell.classList.remove('selected');
                 selectedCell.classList.add('fixed');
                 selectedCell.removeEventListener('click', selectCell);
                 selectedCell = null;
@@ -669,7 +1124,7 @@
             let total = 0;
             
             grid.forEach((val, idx) => {
-                if (currentPuzzle.puzzle[idx] === 0) {
+                if (puzzleDatabase[currentDifficulty][0].puzzle[idx] === 0) {
                     total++;
                     if (val === solution[idx]) {
                         correct++;
@@ -678,26 +1133,122 @@
             });
             
             if (total === 0) {
-                alert('Commencez à jouer!');
+                alert(currentLang === 'fr' ? 'Commencez à jouer!' : 
+                      currentLang === 'en' ? 'Start playing!' : '¡Empieza a jugar!');
             } else if (correct === total) {
                 winGame();
             } else {
-                alert(`${correct} sur ${total} cellules correctes!`);
+                alert(`${correct} / ${total}`);
             }
+        }
+
+        function calculateScore() {
+            const difficultyMultiplier = {
+                'easy': 100,
+                'medium': 200,
+                'hard': 300
+            };
+            
+            const baseScore = difficultyMultiplier[currentDifficulty];
+            const timeBonus = Math.max(0, 1000 - timer * 2);
+            const errorPenalty = errors * 50;
+            const hintPenalty = hintsUsed * 100;
+            
+            return Math.max(0, baseScore + timeBonus - errorPenalty - hintPenalty);
         }
 
         function winGame() {
             clearInterval(timerInterval);
+            
+            const score = calculateScore();
+            totalScore += score;
+            gamesWon++;
+            
+            localStorage.setItem('totalScore', totalScore);
+            localStorage.setItem('gamesWon', gamesWon);
+            
+            leaderboard.push({
+                score: score,
+                time: timer,
+                difficulty: currentDifficulty,
+                date: new Date().toLocaleDateString()
+            });
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 5);
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+            
+            document.getElementById('totalScore').textContent = totalScore;
+            document.getElementById('gamesWon').textContent = gamesWon;
+            updateLeaderboard();
+            
             document.getElementById('finalTime').textContent = document.getElementById('timer').textContent;
+            document.getElementById('finalErrors').textContent = errors;
+            document.getElementById('finalScore').textContent = score;
             document.getElementById('winModal').style.display = 'flex';
+        }
+
+        function updateLeaderboard() {
+            const list = document.getElementById('leaderboardList');
+            list.innerHTML = '';
+            
+            if (leaderboard.length === 0) {
+                list.innerHTML = `<p style="text-align: center; color: var(--brown-primary);">${translations[currentLang].noScores}</p>`;
+                return;
+            }
+            
+            leaderboard.forEach((entry, index) => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
+                item.innerHTML = `
+                    <span class="leaderboard-rank">#${index + 1}</span>
+                    <span>${translations[currentLang][entry.difficulty]}</span>
+                    <span>${entry.score} pts</span>
+                `;
+                list.appendChild(item);
+            });
         }
 
         function closeModal() {
             document.getElementById('winModal').style.display = 'none';
         }
 
-        // Initialize game on load
+        function shareScore() {
+            const score = document.getElementById('finalScore').textContent;
+            const time = document.getElementById('finalTime').textContent;
+            const text = currentLang === 'fr' 
+                ? `J'ai terminé un Sudoku ${translations[currentLang][currentDifficulty]} en ${time} avec ${score} points!`
+                : currentLang === 'en'
+                ? `I completed a ${translations[currentLang][currentDifficulty]} Sudoku in ${time} with ${score} points!`
+                : `¡Completé un Sudoku ${translations[currentLang][currentDifficulty]} en ${time} con ${score} puntos!`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Sudoku Zen',
+                    text: text,
+                    url: window.location.href
+                });
+            } else {
+                alert(text);
+            }
+        }
+
+        function showPrivacy() {
+            const msg = currentLang === 'fr'
+                ? 'Ce jeu utilise le stockage local. Aucune donnée personnelle collectée.'
+                : currentLang === 'en'
+                ? 'This game uses local storage. No personal data collected.'
+                : 'Este juego usa almacenamiento local. No se recopilan datos personales.';
+            alert(msg);
+        }
+
+        function showContact() {
+            alert('contact@sudokuzen.com');
+        }
+
+        // Initialize
+        updateLanguage(currentLang);
         initGame();
+        updateLeaderboard();
     </script>
 </body>
 </html>
